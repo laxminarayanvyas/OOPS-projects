@@ -1,1 +1,343 @@
+import java.util.*;
 
+class User{
+    String id;
+    String fullName;
+
+    User(){}
+    public User(String id,String fullName){
+        this.id=id;
+        this.fullName=fullName;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+}
+class Student extends User{
+    //String courseName;
+    String password;
+    Map<String, LinkedList<String>> marksData=new HashMap<>();
+    Student(){}
+    Student(String sid,String sname,String password){
+        super(sid,sname);
+        this.password=password;
+    }
+
+    public Map<String, LinkedList<String>> getMarksData() {
+        return marksData;
+    }
+
+    public void setMarksData(Map<String, LinkedList<String>> marksData) {
+        this.marksData = marksData;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "marksData=" + marksData +
+                ", id='" + id + '\'' +
+                ", fullName='" + fullName + '\'' +
+                '}';
+    }
+}
+class Teacher extends User{
+    String password;
+    String courseId;
+    String courseName;
+    String criteria;
+
+    //public Map<String,Teacher> teacherData=new HashMap<String,Teacher>();
+
+    Teacher(){}
+    Teacher(String name,String username,String password){
+        super(username,name);
+        this.password=password;
+        //System.out.println(this.id);
+    }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public String getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(String criteria) {
+        this.criteria = criteria;
+    }
+    public void print(){
+        System.out.println(this.fullName);
+    }
+}
+class Operations extends Teacher{
+    Scanner sc=new Scanner(System.in);
+    //List<Teacher> teacherData=new ArrayList<>();
+    Map<String,Teacher> teacherData=new HashMap<>();
+    Map<String,Student> studentData=new HashMap<>();
+    public void login(){
+        String choice="";
+        do{
+            System.out.println("=========LOGIN=======");
+            System.out.println("1. Teacher");
+            System.out.println("2. Student");
+            System.out.println("3. Back");
+            choice=sc.nextLine();
+            switch (choice){
+                case "1":
+                    teacherLogin();
+                    break;
+                case "2":studentLogin();
+                    break;
+                case "3":
+                    break;
+                default:
+                    System.out.println("inv");
+            }
+        }while(!choice.equals("3"));
+    }//login function
+    private void teacherLogin(){
+        System.out.println("Enter username: ");
+        String userid=sc.nextLine();
+        System.out.println("Enter password: ");
+        String pass=sc.nextLine();
+        System.out.println(teacherData);
+        if(true){ //check condition if id and password both correct
+            Teacher t=teacherData.get(userid);
+            //System.out.println(teacherData.containsKey(userid));
+            if(t.getCourseId()==null){
+                System.out.println("Enter course ID: ");
+                String courseId=sc.nextLine();
+                System.out.println("Enter course name: ");
+                String courseName=sc.nextLine();
+                System.out.println("Enter course passing criteria: ");
+                String criteria=sc.nextLine();
+                t.setCourseId(courseId);
+                t.setCourseName(courseName);
+                t.setCriteria(criteria);
+                //addStudents(courseId,courseName);
+            }
+            courseId=teacherData.get(userid).getCourseId();
+            courseName=teacherData.get(userid).getCourseName();
+            String choice="";
+            do{
+                System.out.println("1. Add students");
+                System.out.println("2. View Students");
+                System.out.println("3. Update info");
+                System.out.println("4. Add marks");
+                System.out.println("5. Delete stu from course");
+                System.out.println("6. Back");
+                choice=sc.nextLine();
+                switch (choice){
+                    case "1":addStudentsToCourse(courseId,courseName);
+                    break;
+                    case "2":viewStudents(courseId);
+                    break;
+                    case "3":
+                        break;
+                    case "4": addMarksStudent(courseId);
+                    break;
+                    case "5":break;
+                    case "6":break;
+                    //inv
+                }
+            }while(!choice.equals("6"));
+        }
+    }//teacher login
+    private void studentLogin(){
+        System.out.println("Enter your id: ");
+        String sid=sc.nextLine();
+        System.out.println("Enter password: ");
+        String pass=sc.nextLine();
+
+        //check if id and pass match
+        if(!studentData.containsKey(sid)){
+            System.out.println("!! Entered id does not exist !!");
+            return;
+        }
+
+        System.out.println(studentData.get(sid)); //here show report card
+    }//student login
+    private void addMarksStudent(String courseId){
+        System.out.println("here are list of student enrolled in crse"); //format all print messge
+        viewStudents(courseId);
+
+        System.out.println("Enter id of student to update marks: ");
+        String sid=sc.nextLine();
+
+        //check condition if id enrolled in that course else print message and return
+        updateMark(sid,courseId); //in update student method use this method to update marks
+        //also if there short name as above in code then give propername->sid->studentId
+    }
+    private void updateMark(String studentId,String courseId){
+        System.out.println("Id: "+studentId);
+        System.out.println("Name: "+studentData.get(studentId).getFullName());
+        //explanation of below print line for marks
+        //Map<id,Student(class)>
+        //          |
+        //       Map<courseId,List(courseName(0 index),Makrs(1st index)
+        //from gateMarksData we fetch map associate with course id of student id
+        System.out.println("previous marks: "+studentData.get(studentId).getMarksData().get(courseId).get(1));
+
+        System.out.println("Enter new Marks: ");
+        String newMarks=sc.nextLine();
+        studentData.get(studentId).getMarksData().get(courseId).set(1,newMarks);//.get(courseId).add(1,newMarks)
+        //print updated
+    }
+    private void viewStudents(String courseId){
+        for(String id: studentData.keySet()){
+            //System.out.println(studentData);
+
+            if(studentData.get(id).getMarksData().size()>0){
+                //System.out.println("hoo");
+                if(studentData.get(id).getMarksData().containsKey(courseId)){
+                    System.out.println(studentData.get(id));
+                }
+                //here check where to add else condition or to print no student in course
+            }
+        }
+    }
+    private void viewAllStudent(){
+        //here check if teacher  try to show his stu and no stu assign course that means list is empty then show message "no student in your course"
+        System.out.println("\nID\t\tName");
+        for(String id: studentData.keySet()){
+            System.out.println(id+"\t\t"+studentData.get(id).getFullName());
+        }
+    }
+    private void addStudentsToCourse(String courseId,String courseName){
+        //here is list of student <- print message
+        viewAllStudent();
+
+        System.out.println("Enter id of student whom you want to add in your course: ");
+        String id=sc.nextLine();
+
+        //here also check if id present in studentdata else return
+
+        Student s=studentData.get(id);
+        //check if map is empty
+        Map<String,LinkedList<String>> mp=new HashMap<>();
+        if(s.getMarksData().isEmpty()){
+            System.out.println("hi");
+            mp=new HashMap<String,LinkedList<String>>();
+            mp.put(courseId,new LinkedList<String>(Arrays.asList(courseName,"-")));
+        }
+        if(!s.getMarksData().isEmpty()){
+            mp=s.getMarksData();
+            mp.put(courseId,new LinkedList<String>(Arrays.asList(courseName,"-")));
+            //System.out.println("Map : "+mp);
+        }
+            //Map<String,Integer> mp=new HashMap<String,Integer>() {{put(courseId,0);}};
+        s.setMarksData(mp);
+    }
+
+    //registrations of both
+    private void teacherRegister(){
+        System.out.println("Enter Your full name: ");
+        String name=sc.nextLine();
+        System.out.println("Enter username: ");
+        String username=sc.nextLine();
+        System.out.println("Enter password: ");
+        String password=sc.nextLine();
+        Teacher t=new Teacher(name,username,password);
+        teacherData.put(username,t);
+    }
+    private void studentRegister(){
+        System.out.println("Enter student id: ");
+        String sid=sc.nextLine();
+        //here check if student id exist op.studentData.containsKey(sid)
+        System.out.println("Enter student name: ");
+        String sname=sc.nextLine();
+        System.out.println("Enter password: ");
+        String password=sc.nextLine();
+
+        studentData.put(sid,new Student(sid,sname,password));
+
+        //print student registered
+    }
+    void registration(){
+        String choice;
+        do {
+            System.out.println("======== Register ==========");
+            System.out.println("1. Teacher");
+            System.out.println("2. Student");
+            System.out.println("3. Back");
+            choice=sc.nextLine();
+            switch (choice){
+                case "1": teacherRegister();
+                    break;
+                case "2":studentRegister();
+                    break;
+                case "3":break; //inv baki
+            }
+        }while(!choice.equals("3"));
+    }
+}
+
+class Menu{
+    Scanner sc=new Scanner(System.in);
+    public void options(){
+        //Scanner sc=new Scanner(System.in);
+
+        Operations op=new Operations();
+        String choice="";
+        do{
+            System.out.println("\n========= MainMenu =============");
+            System.out.println("1. Register");
+            System.out.println("2. Login");
+            System.out.println("3. Exit\n");
+            choice=sc.nextLine();
+            switch (choice){
+                case "1":
+                    op.registration();
+                    break;
+                case "2":
+                    //when student try to login and no course assign to him then show message
+                    op.login();
+                    break;
+                case "3":break;
+                default:
+                    System.out.println("inv");
+            }
+        }while(!choice.equals("3"));
+    }
+}
+public class Main
+{
+    public static void main(String args[])
+    {
+        System.out.println("System");
+        new Menu().options();
+    }
+}
